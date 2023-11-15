@@ -1,0 +1,35 @@
+// Write an azure policy that denies users the ability to deploy resources in azure if their subscription defender score is below 80%
+HoldenPulver: write me a azure policy that denies deployement of resources if a subscription in azure has a defender security score of less than 80%
+
+GitHub Copilot: To create an Azure policy that denies deployment of resources if a subscription in Azure has a Defender security score of less than 80%, you would need to use Azure Policy's built-in policy definitions. However, as of now, Azure Policy does not support checking the security score of a subscription directly.
+
+Azure Security Center's Secure Score API can be used to retrieve the security score, but Azure Policy cannot call this API directly. You would need to create a custom solution to periodically check the Secure Score and then apply tags to the subscription or resource group based on the score. Then, you can create an Azure Policy to deny deployment based on these tags.
+
+Here is a pseudocode of how you can implement this:
+
+1. Use Azure Security Center's Secure Score API to get the security score of the subscription.
+2. If the score is less than 80, apply a tag (e.g.,
+"LowSecurityScore") to the subscription or resource group.
+3. Create an Azure Policy that denies deployment if the "LowSecurityScore" tag is present.
+
+Here is an example of how the Azure Policy could look like:
+
+```json
+{
+    "mode": "All",
+    "policyRule": {
+        "if": {
+            "field": "tags['LowSecurityScore']",
+            "exists": "true"
+        },
+        "then": {
+            "effect": "deny"
+        }
+    },
+    "parameters": {},
+    "displayName": "Deny deployment for low security score",
+    "description": "This policy denies deployment of resources if the subscription or resource group has a low security score."
+}
+```
+
+Please note that this is a workaround and might not be the best solution for your use case. It's recommended to use Azure Security Center's recommendations to improve the security posture of your resources.
